@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ตามใจชาบูหม่าล่า</title>
+    <style>
+        /* สไตล์หลัก */
+        body {
+            font-family: 'Sukhumvit Set', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        /* ส่วนหัว */
+        .header {
+            text-align: center;
+            padding: 25px;
+            background: #dc3545;
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* หมวดหมู่เมนู */
+        .menu-category {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .menu-category h2 {
+            color: #dc3545;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        /* รายการเมนู */
+        .menu-item {
+            display: grid;
+            grid-template-columns: 1fr 100px 150px;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: #fff;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .item-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .item-price {
+            color: #666;
+            text-align: right;
+        }
+
+        /* ปุ่มควบคุมจำนวน */
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            color: white;
+        }
+
+        .quantity-btn.decrement {
+            background: #dc3545;
+        }
+
+        .quantity-btn.increment {
+            background: #28a745;
+        }
+
+        .quantity-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.1);
+        }
+
+        .quantity {
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+
+        /* ส่วนสรุปบิล */
+        #order-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #dc3545;
+            outline: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        .submit-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        /* สไตล์หน้าบิล */
+        .bill-page {
+            font-family: 'Sukhumvit Set', Arial;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 30px;
+            background: #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        .bill-header {
+            text-align: center;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .bill-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 15px;
+            padding: 12px 0;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ตามใจชาบูหม่าล่า 🌶️</h1>
+        <p>📞 064-042-7349</p>
+    </div>
+
+    <!-- เมนูเนื้อสัตว์ ผัก อื่นๆ -->
+    <div class="menu-category">
+        <h2>เนื้อสัตว์ ผัก อื่นๆ (บาท/ชิ้น)</h2>
+        <div id="meat-veggies-items"></div>
+    </div>
+
+    <!-- เมนูน้ำซุป -->
+    <div class="menu-category">
+        <h2>น้ำซุป (บาท/น้ำ)</h2>
+        <div id="soup-items"></div>
+    </div>
+
+    <!-- เมนูน้ำจิ้ม -->
+    <div class="menu-category">
+        <h2>น้ำจิ้ม (บาท/ถ้วย)</h2>
+        <div id="dip-items"></div>
+    </div>
+
+    <div id="order-summary">
+        <h2>สรุปรายการสั่งซื้อ</h2>
+        <input type="text" class="form-input" id="customer-name" placeholder="ชื่อคนสั่ง" required>
+        <input type="tel" class="form-input" id="customer-phone" placeholder="เบอร์โทรผู้สั่ง" required>
+        <input type="text" class="form-input" id="delivery-address" placeholder="สถานที่จัดส่ง" required>
+        <button class="submit-btn" onclick="generateBill()">สรุปบิล</button>
+    </div>
+
+    <script>
+        const menuItems = {
+            'meat-veggies': [
+                {name: 'สันคอสไลด์', price: 10},
+                {name: 'สามชั้นสไลด์', price: 10},
+                {name: 'เต้าหู้ชีส', price: 5},
+                {name: 'ซาลาเปาไส้ชีส', price: 5},
+                {name: 'หมี่หยก', price: 7},
+                {name: 'วุ้นเส้น', price: 5},
+                {name: 'เส้นมันเทศ', price: 10},
+                {name: 'ฟองเต้าหู้', price: 10},
+                {name: 'เบบี้ฮ่องเต้', price: 5},
+                {name: 'กะหล่ำปี', price: 5},
+                {name: 'เห็ดเข็มทอง', price: 5}
+            ],
+            'soup': [
+                {name: 'หม่าล่า', price: 19},
+                {name: 'หม่าล่านม', price: 19}
+            ],
+            'dip': [
+                {name: 'น้ำจิ้มงา', price: 10},
+                {name: 'น้ำจิ้มงาหม่าล่า', price: 10}
+            ]
+        };
+
+        function createMenuItems(category, containerId) {
+            const container = document.getElementById(containerId);
+            menuItems[category].forEach((item, index) => {
+                const itemId = `${category}-${index}`;
+                const html = `
+                    <div class="menu-item">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">${item.price} บาท</div>
+                        <div class="quantity-control">
+                            <div class="quantity-btn decrement" onclick="updateQuantity('${itemId}', -1)">-</div>
+                            <div class="quantity" id="qty-${itemId}">0</div>
+                            <div class="quantity-btn increment" onclick="updateQuantity('${itemId}', 1)">+</div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        window.onload = function() {
+            createMenuItems('meat-veggies', 'meat-veggies-items');
+            createMenuItems('soup', 'soup-items');
+            createMenuItems('dip', 'dip-items');
+        };
+
+        const quantities = {};
+        function updateQuantity(itemId, amount) {
+            const newQty = Math.max(0, (quantities[itemId] || 0) + amount);
+            quantities[itemId] = newQty;
+            document.getElementById(`qty-${itemId}`).textContent = newQty;
+        }
+
+        function generateBill() {
+            const customerName = document.getElementById('customer-name').value;
+            const customerPhone = document.getElementById('customer-phone').value;
+            const deliveryAddress = document.getElementById('delivery-address').value;
+            
+            if (!customerName || !customerPhone || !deliveryAddress) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                return;
+            }
+
+            const billWindow = window.open('', '_blank');
+            billWindow.document.write(`
+                <html>
+                <head>
+                    <title>บิลสั่งซื้อ</title>
+                    <style>
+                        .bill-page {
+                            font-family: 'Sukhumvit Set', Arial;
+                            max-width: 600px;
+                            margin: 20px auto;
+                            padding: 30px;
+                            background: #fff;
+                            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                            border-radius: 10px;
+                        }
+                        .bill-header {
+                            text-align: center;
+                            padding-bottom: 20px;
+                            margin-bottom: 30px;
+                            border-bottom: 2px solid #eee;
+                        }
+                        .bill-item {
+                            display: grid;
+                            grid-template-columns: 2fr 1fr 1fr 1fr;
+                            gap: 15px;
+                            padding: 12px 0;
+                            align-items: center;
+                            border-bottom: 1px solid #eee;
+                        }
+                        .bill-total {
+                            font-size: 1.2em;
+                            font-weight: bold;
+                            text-align: right;
+                            margin-top: 20px;
+                        }
+                        .print-btn {
+                            padding: 12px 25px;
+                            background: #dc3545;
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            margin: 20px auto;
+                            display: block;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="bill-page">
+                        <div class="bill-header">
+                            <h1>ตามใจชาบูหม่าล่า 🌶️</h1>
+                            <p>📞 064-042-7349</p>
+                        </div>
+                        
+                        <h3>ข้อมูลลูกค้า</h3>
+                        <p>ชื่อ: ${customerName}</p>
+                        <p>โทร: ${customerPhone}</p>
+                        <p>ที่อยู่: ${deliveryAddress}</p>
+                        
+                        <h3>รายการสั่งซื้อ</h3>
+                        ${generateBillItems()}
+                        
+                        ${generateBillTotal()}
+                        
+                        <button class="print-btn" onclick="window.print()">พิมพ์บิล</button>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+
+        function generateBillItems() {
+            let itemsHTML = '';
+            Object.keys(quantities).forEach(itemId => {
+                if(quantities[itemId] > 0) {
+                    const parts = itemId.split('-');
+                    const index = parts.pop();
+                    const category = parts.join('-');
+                    const item = menuItems[category][index];
+                    
+                    itemsHTML += `
+                        <div class="bill-item">
+                            <div>${item.name}</div>
+                            <div>${item.price} บาท</div>
+                            <div>${quantities[itemId]} ชิ้น</div>
+                            <div>${item.price * quantities[itemId]} บาท</div>
+                        </div>
+                    `;
+                }
+            });
+            return itemsHTML;
+        }
+
+        function generateBillTotal() {
+            let total = 0;
+            Object.keys(quantities).forEach(itemId => {
+                if(quantities[itemId] > 0) {
+                    const parts = itemId.split('-');
+                    const index = parts.pop();
+                    const category = parts.join('-');
+                    total += menuItems[category][index].price * quantities[itemId];
+                }
+            });
+            return `<div class="bill-total">รวมทั้งหมด: ${total} บาท</div>`;
+        }
+    </script>
+</body>
+</html>
