@@ -208,9 +208,9 @@
 
     <div id="order-summary">
         <h2>สรุปรายการสั่งซื้อ</h2>
-        <input type="text" class="form-input" id="customer-name" placeholder="ชื่อคนสั่ง" required>
-        <input type="tel" class="form-input" id="customer-phone" placeholder="เบอร์โทรผู้สั่ง" required>
-        <input type="text" class="form-input" id="delivery-address" placeholder="สถานที่จัดส่ง" required>
+        <input type="text" class="form-input" id="customer-name" placeholder="ชื่อลูกค้า" required>
+        <input type="tel" class="form-input" id="customer-phone" placeholder="เบอร์โทรลูกค้า" required>
+        <input type="text" class="form-input" id="delivery-address" placeholder="สถานที่จัดส่ง(ใส่เลขที่บ้านและซอย)" required>
         <button class="submit-btn" onclick="generateBill()">สรุปบิล</button>
     </div>
 
@@ -223,10 +223,10 @@
                 {name: 'ซาลาเปาไส้ชีส', price: 5},
                 {name: 'หมี่หยก', price: 7},
                 {name: 'วุ้นเส้น', price: 5},
-                {name: 'เส้นมันเทศ', price: 10},
+                {name: 'เส้นมันเทศแบน', price: 10},
                 {name: 'ฟองเต้าหู้', price: 10},
                 {name: 'เบบี้ฮ่องเต้', price: 5},
-                {name: 'กะหล่ำปี', price: 5},
+                {name: 'กะหล่ำปลี', price: 5},
                 {name: 'เห็ดเข็มทอง', price: 5}
             ],
             'soup': [
@@ -282,75 +282,119 @@
             }
 
             const billWindow = window.open('', '_blank');
-            billWindow.document.write(`
-                <html>
-                <head>
-                    <title>บิลสั่งซื้อ</title>
-                    <style>
-                        .bill-page {
-                            font-family: 'Sukhumvit Set', Arial;
-                            max-width: 600px;
-                            margin: 20px auto;
-                            padding: 30px;
-                            background: #fff;
-                            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-                            border-radius: 10px;
-                        }
-                        .bill-header {
-                            text-align: center;
-                            padding-bottom: 20px;
-                            margin-bottom: 30px;
-                            border-bottom: 2px solid #eee;
-                        }
-                        .bill-item {
-                            display: grid;
-                            grid-template-columns: 2fr 1fr 1fr 1fr;
-                            gap: 15px;
-                            padding: 12px 0;
-                            align-items: center;
-                            border-bottom: 1px solid #eee;
-                        }
-                        .bill-total {
-                            font-size: 1.2em;
-                            font-weight: bold;
-                            text-align: right;
-                            margin-top: 20px;
-                        }
-                        .print-btn {
-                            padding: 12px 25px;
-                            background: #dc3545;
-                            color: white;
-                            border: none;
-                            border-radius: 8px;
-                            cursor: pointer;
-                            margin: 20px auto;
-                            display: block;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="bill-page">
-                        <div class="bill-header">
-                            <h1>ตามใจชาบูหม่าล่า 🌶️</h1>
-                            <p>📞 064-042-7349</p>
-                        </div>
-                        
-                        <h3>ข้อมูลลูกค้า</h3>
-                        <p>ชื่อ: ${customerName}</p>
-                        <p>โทร: ${customerPhone}</p>
-                        <p>ที่อยู่: ${deliveryAddress}</p>
-                        
-                        <h3>รายการสั่งซื้อ</h3>
-                        ${generateBillItems()}
-                        
-                        ${generateBillTotal()}
-                        
-                        <button class="print-btn" onclick="window.print()">พิมพ์บิล</button>
+    billWindow.document.write(`
+        <html>
+        <head>
+            <title>บิลสั่งซื้อ</title>
+            <style>
+                .bill-page {
+                    font-family: 'Sukhumvit Set', Arial;
+                    max-width: 600px;
+                    margin: 20px auto;
+                    padding: 30px;
+                    background: #fff;
+                    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                    border-radius: 10px;
+                }
+                .bill-header {
+                    text-align: center;
+                    padding-bottom: 20px;
+                    margin-bottom: 30px;
+                    border-bottom: 2px solid #eee;
+                }
+                .bill-item {
+                    display: grid;
+                    grid-template-columns: 2fr 1fr 1fr 1fr;
+                    gap: 15px;
+                    padding: 12px 0;
+                    align-items: center;
+                    border-bottom: 1px solid #eee;
+                }
+                .bill-total {
+                    font-size: 1.2em;
+                    font-weight: bold;
+                    text-align: right;
+                    margin-top: 20px;
+                }
+                .print-btn {
+                    padding: 12px 25px;
+                    background: #dc3545;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    margin: 20px auto;
+                    display: block;
+                }
+                /* เพิ่มสไตล์ใหม่ */
+                .payment-section {
+                    margin: 30px 0;
+                    text-align: center;
+                    padding: 25px;
+                    background: #f8f9fa;
+                    border-radius: 10px;
+                }
+                .qr-container {
+                    display: flex;
+                    justify-content: center;
+                    margin: 20px 0;
+                }
+                .qr-code {
+                    width: 200px;
+                    height: 250px;
+                    border: 1px solid #ddd;
+                    padding: 10px;
+                    background: white;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                }
+                .payment-info {
+                    margin-top: 15px;
+                    font-size: 14px;
+                    color: #555;
+                    line-height: 1.6;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="bill-page">
+                <div class="bill-header">
+                    <h1>ตามใจชาบูหม่าล่า 🌶️</h1>
+                    <p>📞 064-042-7349</p>
+                </div>
+                
+                <h3>ข้อมูลลูกค้า</h3>
+                <p>ชื่อ: ${customerName}</p>
+                <p>โทร: ${customerPhone}</p>
+                <p>ที่อยู่: ${deliveryAddress}</p>
+                
+                <h3>รายการสั่งซื้อ</h3>
+                ${generateBillItems()}
+                
+                ${generateBillTotal()}
+
+                <!-- ส่วนชำระเงิน -->
+                <div class="payment-section">
+                    <h3>ชำระเงินผ่านพร้อมเพย์</h3>
+                    <div class="qr-container">
+                        <img 
+                            src="https://img2.pic.in.th/pic/680252ef953eb63a70514b.jpg" 
+                            alt="QR Code พร้อมเพย์" 
+                            class="qr-code"
+                        >
                     </div>
-                </body>
-                </html>
-            `);
-        }
+                    <div class="payment-info">
+                        <p>สแกน QR Code เพื่อชำระเงิน</p>
+                        <p>ชื่อบัญชี: น.ส. ปฐมวงศ์ แสงฤทธิ์</p>
+                        
+                    </div>
+                </div>
+                
+                <button class="print-btn" onclick="window.print()">พิมพ์บิล</button>
+            </div>
+        </body>
+        </html>
+    `);
+}
 
         function generateBillItems() {
             let itemsHTML = '';
