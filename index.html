@@ -156,7 +156,7 @@
 
         /* สไตล์หน้าบิล */
         .bill-page {
-            font-family:  'Tahoma','Cordia New','Sukhumvit Set', Arial, sans-serif;
+            font-family: 'Sukhumvit Set', Arial;
             max-width: 600px;
             margin: 20px auto;
             padding: 30px;
@@ -211,7 +211,7 @@
         <input type="text" class="form-input" id="customer-name" placeholder="ชื่อลูกค้า" required>
         <input type="tel" class="form-input" id="customer-phone" placeholder="เบอร์โทรลูกค้า" required>
         <input type="text" class="form-input" id="delivery-address" placeholder="สถานที่จัดส่ง(ใส่เลขที่บ้านและซอย)" required>
-        <button class="submit-btn" onclick="setTimeout(generateBill, 100)">สรุปบิล</button>
+        <button class="submit-btn" onclick="generateBill()">สรุปบิล</button>
     </div>
 
     <script>
@@ -272,20 +272,20 @@
         }
 
         function generateBill() {
-    const customerName = document.getElementById('customer-name').value;
-    const customerPhone = document.getElementById('customer-phone').value;
-    const deliveryAddress = document.getElementById('delivery-address').value;
-    
-    if (!customerName || !customerPhone || !deliveryAddress) {
-        alert('กรุณากรอกข้อมูลให้ครบถ้วน');
-        return;
-    }
+            const customerName = document.getElementById('customer-name').value;
+            const customerPhone = document.getElementById('customer-phone').value;
+            const deliveryAddress = document.getElementById('delivery-address').value;
+            
+            if (!customerName || !customerPhone || !deliveryAddress) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                return;
+            }
 
-            const billContent = `
+            const billWindow = window.open('', '_blank');
+    billWindow.document.write(`
         <html>
         <head>
             <title>บิลสั่งซื้อ</title>
-			<meta charset="UTF-8"> <style>
             <style>
                 .bill-page {
                     font-family: 'Sukhumvit Set', Arial;
@@ -393,14 +393,7 @@
             </div>
         </body>
         </html>
-   `;
-
-    // สร้าง Blob Object
-    const blob = new Blob([billContent], {type: 'text/html'});
-    const url = URL.createObjectURL(blob);
-    
-    // เปิด URL ในหน้าปัจจุบันแทนการใช้ popup
-    window.location.href = url;
+    `);
 }
 
         function generateBillItems() {
